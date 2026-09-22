@@ -14,7 +14,7 @@ function solve_bleb_population(mesh_dir, specs)
     nf    = numel(files);
     fprintf('Solving %d blebs...\n', nf);
 
-    for f = 1:nf
+    for f = 1:10
         fn = fullfile(mesh_dir, files(f).name);
         fprintf('Solving bleb number %d ...\n', f);
         if ismember('bem_sol', who('-file', fn))
