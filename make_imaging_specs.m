@@ -13,7 +13,22 @@ function specs = make_imaging_specs()
     specs.n_water   = 1.335;       % also the medium around the particles
     specs.n_lipid   = 1.495;       % Leslie & Cullis
     specs.n_aqueous = 1.45;        % placeholder
+    specs.n_full    = 1.515;       % full (mRNA-loaded) LNP sphere population
+    specs.n_empty   = 1.335;       % empty LNP sphere population; placeholder -- same as
+                                   % n_water for now, i.e. no core contrast, update if a
+                                   % better estimate exists
     specs.idx_water = 2; specs.idx_lipid = 3; specs.idx_aqueous = 4;   % positions in mat_set
+    specs.idx_full  = 5; specs.idx_empty = 6;                          % (spheres are appended,
+                                                                       % not renumbered, so
+                                                                       % existing bleb solves
+                                                                       % stay valid)
+
+    % ---- sphere mesh (full/empty populations) ----
+    specs.nverts = 144;   % trisphere discretization -- bump for larger particles / higher
+                          % index contrast; refine until cross sections stop changing
+
+    % ---- substrate gap (shared with the bleb mesh builder) ----
+    specs.gap = 2;   % nm, height of each particle's LOWEST point above z=0
 
     % ---- BEM ----
     specs.bem_order = 5;

@@ -10,8 +10,13 @@ function sys = build_imaging_system(specs)
     sys.mat_water   = Material(specs.n_water^2,   1);
     sys.mat_lipid   = Material(specs.n_lipid^2,   1);
     sys.mat_aqueous = Material(specs.n_aqueous^2, 1);
-    % layer materials first, per the nanobem convention
-    sys.mat_set = [sys.mat_glass, sys.mat_water, sys.mat_lipid, sys.mat_aqueous];
+    sys.mat_full    = Material(specs.n_full^2,    1);
+    sys.mat_empty   = Material(specs.n_empty^2,   1);
+    % layer materials first (glass, water), per the nanobem convention -- every population
+    % (bleb, full, empty) shares this ONE mat_set so material indices are never ambiguous;
+    % full/empty are appended at the end so existing bleb solves (indices 1-4) stay valid.
+    sys.mat_set = [sys.mat_glass, sys.mat_water, sys.mat_lipid, sys.mat_aqueous, ...
+                   sys.mat_full, sys.mat_empty];
 
     sys.layer = stratified.layerstructure([sys.mat_glass, sys.mat_water], 0);
     sys.einc  = optics.decompose(sys.k0, specs.pol, specs.dir);
