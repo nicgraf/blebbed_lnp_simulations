@@ -97,10 +97,11 @@ function out = render_bleb_size_gradient(grid_dir, specs, varargin)
 % immediately readable rather than all-or-nothing. See out.skipReason (one cell
 % per bleb size, '' if OK) and the printed summary at the end of the run.
 %
-% Every panel with real data shares ONE color scale (cube-root-compressed, like
-% set_cbrt_colorbar.m, with a single colorbar for the whole grid) -- so panels are
-% directly comparable to each other and the trend across bleb sizes isn't an
-% artifact of each panel re-normalizing to its own contrast range.
+% Every panel with real data shares ONE plain LINEAR color scale (no log/cube-root
+% compression -- same convention as propagate_iscat_image.m's own display, just
+% imagesc(...,[-cmax cmax]) with a single shared colorbar for the whole grid) --
+% so panels are directly comparable to each other and the trend across bleb sizes
+% isn't an artifact of each panel re-normalizing to its own contrast range.
 %
 % Runtime: solving is done inline per particle (order = specs.bem_order stratified
 % solve each) -- the slow part, likely minutes per particle -- and does NOT use
@@ -288,7 +289,7 @@ function out = render_bleb_size_gradient(grid_dir, specs, varargin)
         ax = nexttile(tl);
         if ok(ib)
             img = squeeze(contrastStack(ib, :, :));
-            imagesc(ax, x, x, nthroot(img, 3), nthroot([-cmax, cmax], 3));
+            imagesc(ax, x, x, img, [-cmax, cmax]);
             axis(ax, 'image');
             lastAx = ax;
         else
@@ -310,19 +311,11 @@ function out = render_bleb_size_gradient(grid_dir, specs, varargin)
     end
     title(tl, sprintf('Bleb size gradient (core = %.2f nm, z = %.0f nm)', d_core, opt.ZFocusNm));
 
-    % ---- one shared colorbar for the whole grid, cube-root ticks (like set_cbrt_colorbar.m) ----
+    % ---- one shared colorbar for the whole grid, plain linear scale (same convention
+    % as propagate_iscat_image.m's own displayIt colorbar -- auto ticks, no compression) ----
     if ~isempty(lastAx)
         cb = colorbar(lastAx);
         cb.Layout.Tile = 'east';
-        decade_ticks = [1 2 5];
-        all_ticks = [];
-        for e = 0:4, all_ticks = [all_ticks, decade_ticks * 10^e]; end %#ok<AGROW>
-        all_ticks = unique(all_ticks);
-        all_ticks = all_ticks(all_ticks <= cmax);
-        if isempty(all_ticks), all_ticks = cmax; end
-        tick_vals = [-fliplr(all_ticks), 0, all_ticks];
-        cb.Ticks = nthroot(tick_vals, 3);
-        cb.TickLabels = arrayfun(@(v) sprintf('%g%%', v), tick_vals, 'UniformOutput', false);
         cb.Label.String = 'iSCAT contrast (%)';
     end
 
