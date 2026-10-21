@@ -10,11 +10,11 @@ function solve_bleb_population(mesh_dir, specs)
     if ~isfield(specs, 'tau_method'), specs.tau_method = 'native'; end   % tolerate a stale specs struct
     sys   = build_imaging_system(specs);
     einc  = sys.einc;
-    files = dir(fullfile(mesh_dir, 'bleb_*_mesh.mat'));
+    files = dir(fullfile(mesh_dir, 'blebgrid_*_mesh.mat'));
     nf    = numel(files);
     fprintf('Solving %d blebs...\n', nf);
 
-    for f = 11:50
+    for f = 1:nf
         fn = fullfile(mesh_dir, files(f).name);
         fprintf('Solving bleb number %d ...\n', f);
         if ismember('bem_sol', who('-file', fn))
